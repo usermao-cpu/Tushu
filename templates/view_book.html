@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }} - 图书管理系统{% endblock %}
+
+{% block content %}
+<div class="book-detail">
+    <div class="detail-header">
+        <h1>{{ book.title }}</h1>
+        <div class="detail-actions">
+            <a href="{{ url_for('edit_book', book_id=book.id) }}" class="btn btn-warning">编辑</a>
+            <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" style="display:inline"
+                  onsubmit="return confirm('确定要删除「{{ book.title }}」吗？')">
+                <button type="submit" class="btn btn-danger">删除</button>
+            </form>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">返回列表</a>
+        </div>
+    </div>
+
+    <div class="detail-card">
+        <table class="detail-table">
+            <tr>
+                <th>ID</th>
+                <td>{{ book.id }}</td>
+            </tr>
+            <tr>
+                <th>书名</th>
+                <td>{{ book.title }}</td>
+            </tr>
+            <tr>
+                <th>作者</th>
+                <td>{{ book.author }}</td>
+            </tr>
+            <tr>
+                <th>ISBN</th>
+                <td>{{ book.isbn or '-' }}</td>
+            </tr>
+            <tr>
+                <th>出版社</th>
+                <td>{{ book.publisher or '-' }}</td>
+            </tr>
+            <tr>
+                <th>出版年份</th>
+                <td>{{ book.year or '-' }}</td>
+            </tr>
+            <tr>
+                <th>图书简介</th>
+                <td>{{ book.description or '暂无简介' }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}

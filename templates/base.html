@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}图书管理系统{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ url_for('index') }}" class="navbar-brand">📚 图书管理系统</a>
+            <div class="navbar-menu">
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('add_book') }}">添加图书</a>
+            </div>
+            <form class="search-form" action="{{ url_for('search') }}" method="GET">
+                <input type="text" name="q" placeholder="搜索图书..." required>
+                <button type="submit">搜索</button>
+            </form>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 图书管理系统 | Powered by Flask + K8s</p>
+        </div>
+    </footer>
+</body>
+</html>
