@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: library-app
+  namespace: library-system
+  labels:
+    app: library-app
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: library-app
+  template:
+    metadata:
+      labels:
+        app: library-app
+    spec:
+      containers:
+        - name: library-app
+          # TODO: 替换为你的镜像地址
+          # 格式: <your-registry>/library-management:<tag>
+          # 示例: registry.cn-hangzhou.aliyuncs.com/usermao/library-management:latest
+          image: library-management:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: library-secret
+                  key: SECRET_KEY
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: DATABASE_URL
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: PORT
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "300m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: library-data
+              mountPath: /app/data
+      volumes:
+        - name: library-data
+          persistentVolumeClaim:
+            claimName: library-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: library-pvc
+  namespace: library-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

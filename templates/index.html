@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}首页 - 图书管理系统{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>图书列表</h1>
+    <a href="{{ url_for('add_book') }}" class="btn btn-primary">+ 添加图书</a>
+</div>
+
+{% if books %}
+<div class="table-container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>书名</th>
+                <th>作者</th>
+                <th>ISBN</th>
+                <th>出版社</th>
+                <th>出版年份</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>{{ book.id }}</td>
+                <td><a href="{{ url_for('view_book', book_id=book.id) }}">{{ book.title }}</a></td>
+                <td>{{ book.author }}</td>
+                <td>{{ book.isbn or '-' }}</td>
+                <td>{{ book.publisher or '-' }}</td>
+                <td>{{ book.year or '-' }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('view_book', book_id=book.id) }}" class="btn btn-sm btn-info">查看</a>
+                    <a href="{{ url_for('edit_book', book_id=book.id) }}" class="btn btn-sm btn-warning">编辑</a>
+                    <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" style="display:inline"
+                          onsubmit="return confirm('确定要删除「{{ book.title }}」吗？')">
+                        <button type="submit" class="btn btn-sm btn-danger">删除</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <p>📖 暂无图书数据</p>
+    <p>点击下方按钮添加第一本图书</p>
+    <a href="{{ url_for('add_book') }}" class="btn btn-primary">添加图书</a>
+</div>
+{% endif %}
+{% endblock %}
